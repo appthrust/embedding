@@ -1,0 +1,53 @@
+apiVersion: appthrust.io/v1alpha1
+kind: ApplicationStackDefinition
+metadata:
+  name: embedding
+spec:
+  display:
+    title: Embedding
+    description: Text embeddings (EmbeddingGemma) served inside the Project for Knowledge
+      search; no content leaves the cluster.
+    category: assist
+    iconRef:
+      name: sparkles
+  # Publisher appends release versions here; retain the seed as the compatibility floor.
+  versions:
+  - name: 0.1.0
+    images:
+      web: ghcr.io/appthrust/platform/embedding@sha256:e8878e35e3fccfc0708f735d9002e04b8bd3983db7c1deeb47cf949b3f6d8153
+    stream: '0.1'
+    default: true
+    served: true
+  updatePolicy:
+    default: pinned
+    allowed:
+    - pinned
+    - follow
+  components:
+  - id: web
+    definitionRef:
+      name: web-service
+      version: v1
+    defaultValues:
+      port: 8080
+      minScale: 1
+      internalService: true
+      scratchVolumes:
+      - mountPath: /home/nonroot/.ollama
+        sizeLimit: 64Mi
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          cpu: '2'
+          memory: 2Gi
+      readinessProbePath: /readyz
+      livenessProbePath: /healthz
+  publish:
+    hostnameLabel: embedding
+  releaseIdentityEnvPrefix: EMBEDDING
+  health:
+    capabilities:
+    - name: embeddings
+      required: true
