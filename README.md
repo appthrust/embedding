@@ -16,7 +16,7 @@ configuration, request limits, warm-up, process supervision, and shutdown.
 ## Develop
 
 Use Go 1.26 or newer and Bun 1.4.1. The public Go SDK is
-[`github.com/appthrust/appserver-go`](https://github.com/appthrust/appserver-go).
+[`github.com/appthrust/appserver-go`](https://github.com/appthrust/appserver-go) v0.3.0.
 There is no platform checkout or module replacement in the app's build.
 
 ```sh
@@ -52,6 +52,9 @@ bake the model, so a full image must build on the target architecture. A
 builder-only check does not prove model download or the non-root runtime.
 
 ## Release
+
+Next release: **`v0.3.0`**, upgrading the shared server SDK to v0.3.0.
+The catalog publisher appends the built image; existing version digests stay immutable.
 
 Once the bootstrap prerequisites below are complete, create and push a new
 SemVer tag, starting with `v0.2.0` (the existing catalog floor owns `0.1.0`):
