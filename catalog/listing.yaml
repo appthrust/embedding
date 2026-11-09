@@ -1,0 +1,64 @@
+locales:
+  en:
+    title: Embedding
+    tagline: Turns documents into search vectors inside your Project, so Knowledge can find passages by meaning, not only by matching words.
+    overview: |
+      Embedding converts text into vectors that capture its meaning, using the EmbeddingGemma model. Knowledge uses these vectors for vector search and hybrid search, so people in the Project can find the right passage even when their question is worded differently from the document.
+
+      Nobody needs to open Embedding day to day. When someone adds a document to Knowledge, Knowledge splits it into chunks and saves it once every chunk has been embedded. A search query is embedded the same way and compared with the stored chunks. In Knowledge's search playground you can switch between full-text, vector and hybrid modes and compare the results.
+
+      The Dashboard shows Embedding as Ready only after the model has returned a vector at start-up, and lists Knowledge as the app that uses it. You choose whether new versions install automatically or stay pinned until you update. For developers, Embedding also exposes an embeddings API that returns 768-dimensional vectors.
+
+      Embedding runs inside the Project, and the model is included in the app. It needs no API key and calls no outside service, so document text does not leave the Project. It runs on CPU; no GPU node is required. Access goes through the Project's sign-in with your organisation account. Installing Knowledge installs Embedding automatically.
+  ja:
+    title: Embedding
+    tagline: プロジェクトの中で文書を検索用のベクトルに変換し、言葉が一致しなくても意味の近い箇所を Knowledge で探せるようにします。
+    overview: |
+      Embedding は、EmbeddingGemma モデルで文章を意味のベクトルに変換するアプリです。Knowledge はこのベクトルを使ってベクトル検索とハイブリッド検索を行います。質問と文書で言い回しが違っていても、プロジェクトのメンバーは目的の箇所を見つけられます。
+
+      普段の利用で Embedding を直接開く必要はありません。Knowledge に文書を追加すると、Knowledge が文書をチャンクに分け、すべてのチャンクの埋め込みが終わってから保存します。検索するときはクエリも同じように埋め込まれ、保存済みのチャンクと照合されます。Knowledge の検索プレイグラウンドでは、全文検索・ベクトル・ハイブリッドを切り替えて結果を比べられます。
+
+      ダッシュボードには、起動時にモデルがベクトルを返したことを確かめてから「準備完了」と表示され、利用しているアプリとして Knowledge が並びます。新しいバージョンを自動で入れるか、バージョンを固定して都合のよいときに更新するかを選べます。開発者向けには、768 次元のベクトルを返す埋め込み API も用意しています。
+
+      Embedding はプロジェクトの中で動き、モデルもアプリに含まれています。API キーは不要で、外部のサービスを呼び出さないため、文書の本文がプロジェクトの外に出ることはありません。CPU で動作し、GPU ノードは必要ありません。アクセスには、組織のアカウントによるプロジェクトのサインインを使います。Knowledge をインストールすると、Embedding も自動でインストールされます。
+highlights:
+  - screenshot: installation
+    locales:
+      en:
+        title: Runs inside the Project
+        body: The model ships with the app, with no API key and no outside service, so document text stays in the Project. The Dashboard marks it Ready once the model has answered, and shows Knowledge as the app that uses it.
+      ja:
+        title: プロジェクトの中で動きます
+        body: モデルはアプリに含まれ、API キーも外部サービスも使わないため、文書の本文はプロジェクトの中にとどまります。モデルが応答してからダッシュボードに「準備完了」と表示され、利用しているアプリとして Knowledge が並びます。
+  - screenshot: knowledge-vector-search
+    locales:
+      en:
+        title: Search by meaning in Knowledge
+        body: Vector and hybrid search in Knowledge rely on Embedding, so a question finds relevant passages even when the document uses other words. The search playground lets you compare full-text, vector and hybrid results for the same query.
+      ja:
+        title: Knowledge で意味の近さから探せます
+        body: Knowledge のベクトル検索とハイブリッド検索は Embedding を使います。文書と言い回しが違う質問でも、関係する箇所が見つかります。検索プレイグラウンドでは、同じクエリで全文検索・ベクトル・ハイブリッドの結果を比べられます。
+  - screenshot: catalog-requires
+    locales:
+      en:
+        title: Installed together with Knowledge
+        body: Knowledge lists Embedding as a required app and installs it automatically. There is nothing else to install or configure, and you can let new versions arrive automatically or pin a version.
+      ja:
+        title: Knowledge と一緒に入ります
+        body: Knowledge は必要なアプリとして Embedding を挙げており、インストール時に自動で入ります。ほかに入れるものや設定はありません。新しいバージョンを自動で反映するか、固定するかも選べます。
+screenshots:
+  - name: installation
+    file: installation.webp
+    alt:
+      en: "AppThrust Dashboard page for the installed Embedding app, version 0.2.0, with Ready and Healthy badges, the branch and update settings, and a Dependencies card listing Knowledge as the app that uses it."
+      ja: "AppThrust ダッシュボードのインストール済み Embedding（0.2.0）のページ。「準備完了」「正常」のバッジ、ブランチと更新の設定、利用しているアプリとして Knowledge を示す依存関係カードが表示されています。"
+  - name: knowledge-vector-search
+    file: knowledge-vector-search.webp
+    alt:
+      en: "Knowledge search playground with the query 「育児休業から復帰するときの手続き」 entered, search mode set to Vector, maximum hits 8, and options to rerank or expand the query with an LLM."
+      ja: "Knowledge の検索プレイグラウンド。クエリに「育児休業から復帰するときの手続き」を入力し、検索モードを「ベクトル」、最大ヒット数を 8 にした状態で、LLM による並べ替えとクエリ補完の選択肢があります。"
+  - name: catalog-requires
+    file: catalog-requires.webp
+    alt:
+      en: "Dashboard Marketplace catalog cards for AI Gateway, Embedding, Inference, Knowledge, LLM and Vision; the Knowledge card lists Embedding and AI Gateway as required apps that install automatically."
+      ja: "ダッシュボードのマーケットプレイスのカタログ。AI Gateway、Embedding、Inference、Knowledge、LLM、Vision のカードが並び、Knowledge のカードには必要なアプリとして Embedding と AI Gateway（自動でインストール）が表示されています。"
