@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -18,6 +19,7 @@ import (
 	"github.com/appthrust/appserver-go/apphealth"
 	"github.com/appthrust/appserver-go/appserver/health"
 	"github.com/appthrust/appserver-go/appserver/ollamasupervisor"
+	"github.com/appthrust/appserver-go/appserver/requestlog"
 )
 
 type config struct {
@@ -91,11 +93,8 @@ func serve(ctx context.Context, listen string, cfg config) error {
 		defer close(childDone)
 		s.Run(childCtx)
 	}()
-	server := &http.Server{
-		Handler:           newHandler(cfg.model, cfg.upstream, func() bool { return !draining.Load() && s.Ready() }, &outcomes),
-		ReadHeaderTimeout: 10 * time.Second, ReadTimeout: requestTimeout,
-		WriteTimeout: requestTimeout + 5*time.Second, IdleTimeout: 60 * time.Second,
-	}
+	handler := newHandler(cfg.model, cfg.upstream, func() bool { return !draining.Load() && s.Ready() }, &outcomes)
+	server := newServer(handler, os.Stderr)
 	served := make(chan error, 1)
 	go func() { served <- server.Serve(listener) }()
 	log.Printf("embedding-server listening on %s (project %s)", listener.Addr(), cfg.projectID)
@@ -116,4 +115,12 @@ func serve(ctx context.Context, listen string, cfg config) error {
 		return nil
 	}
 	return err
+}
+
+func newServer(handler http.Handler, logOutput io.Writer) *http.Server {
+	return &http.Server{
+		Handler:           requestlog.Wrap(handler, requestlog.Options{Service: "embedding", Output: logOutput}),
+		ReadHeaderTimeout: 10 * time.Second, ReadTimeout: requestTimeout,
+		WriteTimeout: requestTimeout + 5*time.Second, IdleTimeout: 60 * time.Second,
+	}
 }

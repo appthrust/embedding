@@ -14,6 +14,7 @@ import (
 	"github.com/appthrust/appserver-go/appserver/health"
 	"github.com/appthrust/appserver-go/appserver/httpx"
 	"github.com/appthrust/appserver-go/appserver/releaseidentity"
+	"github.com/appthrust/appserver-go/appserver/requestlog"
 )
 
 const (
@@ -130,7 +131,14 @@ func newHandler(model string, upstream *url.URL, ready func() bool, outcomes *he
 		if response.StatusCode == http.StatusTooManyRequests {
 			class = apphealth.ReasonResourceExhausted
 		}
-		outcomes.Record(copyErr == nil && response.StatusCode >= 200 && response.StatusCode < 300, class)
+		upstreamOK := response.StatusCode >= 200 && response.StatusCode < 300
+		switch {
+		case copyErr != nil:
+			requestlog.SetOutcome(r, "stream_interrupted", "response_copy_failed")
+		case !upstreamOK:
+			requestlog.SetOutcome(r, "upstream_error", "upstream_non_2xx")
+		}
+		outcomes.Record(copyErr == nil && upstreamOK, class)
 	})
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})

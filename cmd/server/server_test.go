@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -140,6 +141,31 @@ func TestProxyRejectsFifthInFlightRequest(t *testing.T) {
 		}
 	}
 	require.Equal(t, http.StatusOK, requestForTest(h, http.MethodPost, "/v1/embeddings", `{"input":"after release"}`).Code)
+}
+
+func TestRequestLogForInterruptedEmbeddingResponse(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Length", "1024")
+		_, _ = io.WriteString(w, "private-partial-body")
+	}))
+	defer upstream.Close()
+	var logs bytes.Buffer
+	h := newServer(handlerForTest(t, upstream.URL, func() bool { return true }), &logs).Handler
+	w := requestForTest(h, http.MethodPost, "/v1/embeddings?private-query", `{"input":"private-input"}`)
+	require.Equal(t, http.StatusOK, w.Code)
+	require.Equal(t, "private-partial-body", w.Body.String())
+
+	require.Equal(t, 1, bytes.Count(logs.Bytes(), []byte("\n")))
+	require.NotContains(t, logs.String(), "private-")
+	var entry struct {
+		Service, Outcome, Reason string
+		Status                   int
+	}
+	require.NoError(t, json.Unmarshal(logs.Bytes(), &entry))
+	require.Equal(t, "embedding", entry.Service)
+	require.Equal(t, http.StatusOK, entry.Status)
+	require.Equal(t, "stream_interrupted", entry.Outcome)
+	require.Equal(t, "response_copy_failed", entry.Reason)
 }
 
 func TestProxyDoesNotFollowRedirectsAndPreservesUpstreamErrors(t *testing.T) {
